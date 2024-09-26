@@ -24,17 +24,17 @@ model Car {
   imported         Boolean // Se o carro é importado ou não
   plates           String // Placas do carro
   selling_date     DateTime? // Data de venda; preenchimento opcional
-  selling_price    Decimal? // Preço de venda; preenchimento opcional    
+  selling_price    Decimal? // Preço de venda; preenchimento opcional
 }
 
 model Customer {
   id             Int       @id @default(autoincrement())
   name           String
   ident_document String
-  birth_date     DateTime? // Campo opcional
+  birth_date     DateTime? //Opicional
   street_name    String
   house_number   String
-  complements    String? // Campo opcional
+  complements    String? //Opicional
   municipality   String
   state          String
   phone          String
@@ -43,9 +43,19 @@ model Customer {
 
 model User {
   id       Int     @id @default(autoincrement())
-  fullname String // Nome completo
-  username String  @unique // Não pode repetir
+  fullname String
+  username String  @unique
   email    String  @unique
   password String
   is_admin Boolean @default(false)
+}
+
+model Seller {
+  id                Int      @id @default(autoincrement())
+  fullname          String
+  birth_date        DateTime
+  identity_document String   @unique
+  email             String   @unique
+  phone             String
+  is_manager        Boolean  @default(false)
 }

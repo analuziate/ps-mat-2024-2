@@ -21,6 +21,9 @@ export default function (req, res, next) {
       sem verificar a autorização
     */
     for (let route of bypassRoutes) {
+        const { url, method } = req
+        console.log({ url, method })
+        console.log({ url: route.url, method: route.method })
         if (route.url === req.url && route.method === req.method) {
             next()
             return
@@ -34,8 +37,7 @@ export default function (req, res, next) {
     // da request
     const authHeader = req.headers['authorization']
 
-    console.log({ HEADERS: req.headers })
-
+    // console.log({HEADERS: req.headers})
     // O cabeçalho 'authorization' não existe, retorna
     // HTTP 403: Forbidden
     if (!authHeader) {
@@ -43,7 +45,7 @@ export default function (req, res, next) {
         return res.status(403).end()
     }
 
-    // O cabeçalho de autorização tem o formato "Bearer XXXXXXX",
+    // O cabeçalho de autorização tem o formato "Bearer: XXXXXXX",
     // onde XXXXXXX é o token. Portanto, precisamos dividir esse
     // cabeçalho em duas partes, cortando-o onde está o caracter de
     // espaço, e aproveitar apenas a segunda parte
