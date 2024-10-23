@@ -15,6 +15,7 @@ import useNotification from '../../ui/useNotification'
 import useWaiting from '../../ui/useWaiting'
 
 export default function UserList() {
+
     const columns = [
         {
             field: 'id',
@@ -29,9 +30,10 @@ export default function UserList() {
         },
         {
             field: 'username',
-            headerName: 'Nome de Usuário',
+            headerName: 'Nome de usuário',
             width: 150,
         },
+
         {
             field: 'email',
             headerName: 'E-mail',
@@ -39,9 +41,9 @@ export default function UserList() {
         },
         {
             field: 'is_admin',
-            headerName: 'É Adm?',
+            headerName: 'É admin?',
             width: 100,
-            renderCell: (value) => (value.row.imported ? 'SIM' : 'NÂO'),
+            renderCell: (value) => (value.row.is_admin ? 'SIM' : '')
         },
         {
             field: '_edit',
@@ -96,7 +98,7 @@ export default function UserList() {
     async function fetchData() {
         showWaiting(true)
         try {
-            const result = await myfetch.get('/users?include=customer')
+            const result = await myfetch.get('/users')
             setState({
                 ...state,
                 users: result,
@@ -136,7 +138,7 @@ export default function UserList() {
             <ConfirmDialog />
 
             <Typography variant='h1' gutterBottom>
-                Listagem de Usuários
+                Listagem de usuários
             </Typography>
 
             <Box
@@ -153,7 +155,7 @@ export default function UserList() {
                         color='secondary'
                         startIcon={<AddBoxIcon />}
                     >
-                        Novo usuário
+                        Novo Usuário
                     </Button>
                 </Link>
             </Box>
@@ -176,4 +178,4 @@ export default function UserList() {
             </Paper>
         </>
     )
-} 
+}
