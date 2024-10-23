@@ -153,7 +153,7 @@ export default function CarForm() {
             let car = { ...formDefaults }, customers = []
 
             // Busca a lista de cliente para preencher o combo de escolha do cliente que comprou o carro
-            customers = await fetch.get('/customers')
+            customers = await myfetch.get('/customers')
 
             // Se houver paramentro na rota, precisamos buscar o carro para ser editado
             if (params.id) {
