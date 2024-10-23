@@ -20,13 +20,15 @@ controller.create = async function (req, res) {
 
 controller.retriveAll = async function (req, res) {
   try {
-    const result = await prisma.customer.findMany()
+    const result = await prisma.customer.findMany({
+      orderBy: [{ name: 'asc' }],
+      include: {
+        cars: req.query.include === 'cars'
+      }
+    })
     res.send(result).end()
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
-
-    //HTTP 500: Internal Server Error
     res.status(500).end()
   }
 }
@@ -34,7 +36,8 @@ controller.retriveAll = async function (req, res) {
 controller.retriveOne = async function (req, res) {
   try {
     const result = await prisma.customer.findUnique({
-      where: { id: Number(req.params.id) }
+      where: { id: Number(req.params.id) },
+      include: { cars: get.query.include === 'cars' }
     })
 
     //Encontrou -> retorna HTTP 200: OK (implícito)

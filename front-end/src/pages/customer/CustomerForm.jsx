@@ -25,10 +25,10 @@ export default function CustomerForm() {
     birth_date: null,
     street_name: '',
     house_number: '',
-    additional_info: '',
+    complements: '',
     district: '',
-    city: '',
-    uf: '',
+    municipality: '',
+    state: '',
     phone: '',
     email: ''
   }
@@ -251,15 +251,15 @@ export default function CustomerForm() {
           />
 
           <TextField
-            name="additional_info"
+            name="complements"
             label="Complemento"
             variant="filled"
             fullWidth
             placeholder="Apto., bloco, casa, etc."
-            value={customer.additional_info}
+            value={customer.complements}
             onChange={handleFieldChange}
-            error={inputErrors?.additional_info}
-            helperText={inputErrors?.additional_info}
+            error={inputErrors?.complements}
+            helperText={inputErrors?.complements}
           />
 
           <TextField
@@ -275,28 +275,28 @@ export default function CustomerForm() {
           />
 
           <TextField
-            name="city"
+            name="municipality"
             label="Município"
             variant="filled"
             required
             fullWidth
-            value={customer.city}
+            value={customer.municipality}
             onChange={handleFieldChange}
-            error={inputErrors?.city}
-            helperText={inputErrors?.city}
+            error={inputErrors?.municipality}
+            helperText={inputErrors?.municipality}
           />
 
           <TextField
-            name="uf"
+            name="state"
             label="UF"
             variant="filled"
             required
             fullWidth
-            value={customer.uf}
+            value={customer.state}
             onChange={handleFieldChange}
             select
-            error={inputErrors?.uf}
-            helperText={inputErrors?.uf}
+            error={inputErrors?.state}
+            helperText={inputErrors?.state}
           >
             {
               states.map(s =>
@@ -310,7 +310,7 @@ export default function CustomerForm() {
           <InputMask
             mask="(99) %9999-9999"
             formatChars={phoneMaskFormatChars}
-            maskChar=" "
+            maskChar="_"
             value={customer.phone}
             onChange={handleFieldChange}
           >
@@ -358,11 +358,11 @@ export default function CustomerForm() {
             </Button>
           </Box>
 
-          {/* <Box sx={{ fontFamily: 'monospace', display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {<Box sx={{ fontFamily: 'monospace', display: 'flex', flexDirection: 'column', width: '100%' }}>
             {JSON.stringify(customer)}
             <hr />
             {JSON.stringify(inputErrors)}
-          </Box> */}
+          </Box>}
 
         </form>
       </Box>

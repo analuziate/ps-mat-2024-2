@@ -24,7 +24,7 @@ function getOptions(body = null, method = 'GET') {
   const options = {
     method,
     headers: { "Content-type": "application/json; charset=UTF-8" },
-    // credentials: 'include'
+    credentials: 'include' // Instrui o Back-End a gravar cookies no Front-End
   }
 
   if (body) options.body = JSON.stringify(body)
@@ -40,7 +40,7 @@ function getOptions(body = null, method = 'GET') {
 
 function getErrorDescription(response) {
   switch (response.status) {
-    case 401:   // Unauthorized
+    case 401:
       return 'ERRO: usuário ou senha incorretos'
 
     case 403:
@@ -54,6 +54,7 @@ function getErrorDescription(response) {
 
   }
 }
+
 
 function processResponse(response) {
   if (response.ok) {
@@ -82,3 +83,5 @@ myfetch.delete = async function (path) {
   const response = await fetch(baseUrl + path, getOptions(null, 'DELETE'))
   return processResponse(response)
 }
+
+export default myfetch

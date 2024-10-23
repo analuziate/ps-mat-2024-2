@@ -5,6 +5,12 @@ const controller = {} //Objeto vazio
 
 controller.create = async function (req, res) {
   try {
+    //Preenche qual usuário criou o carro com o id do usuário autenticado
+    req.body.created_user_id = req.authUser.id
+
+    //Preenche qual usuário modificou por último o carro com o id do usuário autenticado
+    req.body.updated_user_id = req.authUser.id
+
     await prisma.car.create({ data: req.body })
 
     //HTTP 201: Created
@@ -20,21 +26,37 @@ controller.create = async function (req, res) {
 
 controller.retriveAll = async function (req, res) {
   try {
-    const result = await prisma.car.findMany()
-    res.send(result).end()
-  }
-  catch (error) {
-    console.error(error)
+    const includedRels = req.query.include?.split(',') ?? []
 
-    //HTTP 500: Internal Server Error
+    const result = await prisma.car.findMany({
+      orderBy: [{ model: 'asc' }, { brand: 'asc' }, { id: 'asc' }],
+      include: {
+        customer: req.query.includedRels === ('customer'),
+        created_user: req.query.includedRels === ('created_user'),
+        updated_user: req.query.includedRels === ('updated_user')
+      }
+    })
+    res.send(result).end()
+  } catch (error) {
+    console.error(error)
     res.status(500).end()
   }
 }
 
+
 controller.retriveOne = async function (req, res) {
   try {
+    const includedRels = req.query.include?.split(',') ?? []
+
     const result = await prisma.car.findUnique({
-      where: { id: Number(req.params.id) }
+      where: {
+        id: Number(req.params.id)
+      },
+      include: {
+        customer: req.query.includedRels === 'car',
+        created_user: req.query.includedRels === 'created_user',
+        updated_user: req.query.includedRels === 'updated_user'
+      }
     })
 
     //Encontrou -> retorna HTTP 200: OK (implícito)
@@ -52,6 +74,8 @@ controller.retriveOne = async function (req, res) {
 
 controller.update = async function (req, res) {
   try {
+    req.body.updated_user_id = req.authUser.id
+
     const result = await prisma.car.update({
       where: { id: Number(req.params.id) },
       data: req.body
