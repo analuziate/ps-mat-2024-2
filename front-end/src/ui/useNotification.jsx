@@ -6,7 +6,7 @@ export default function useNotification() {
 
   const [state, setState] = React.useState({
     open: false,
-    message : '',
+    message: '',
     severity: 'success',
     timeout: 4000,
     onClose: null
@@ -40,15 +40,15 @@ export default function useNotification() {
       if (reason === 'clickaway') {
         return
       }
-      setState({...state, open: false})
-      
-      if(typeof onClose === 'function') onClose(event, reason)
+      setState({ ...state, open: false })
+
+      if (typeof onClose === 'function') onClose(event, reason)
     }
 
     return (
       <Snackbar open={open} autoHideDuration={timeout} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
-          { message }
+          {message}
         </Alert>
       </Snackbar>
     )

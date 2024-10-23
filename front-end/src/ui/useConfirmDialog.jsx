@@ -7,13 +7,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 export default function useConfirmDialog() {
-  
+
   const [state, setState] = React.useState({
     open: false,
     title: '',
     question: '',
-    fnOnConfirm: () => {},
-    fnOnCancel: () => {}
+    fnOnConfirm: () => { },
+    fnOnCancel: () => { }
   })
   const {
     open,
@@ -31,11 +31,11 @@ export default function useConfirmDialog() {
         title,
         question,
         fnOnConfirm: () => {
-          setState({...state, open: false})
+          setState({ ...state, open: false })
           resolve(true)
         },
         fnOnCancel: () => {
-          setState({...state, open: false})
+          setState({ ...state, open: false })
           resolve(false)
         }
       })

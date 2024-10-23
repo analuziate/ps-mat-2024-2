@@ -17,10 +17,10 @@ export default function MainMenu() {
 
   return (
     <div>
-      <IconButton 
-        edge="start" 
-        color="inherit" 
-        aria-label="menu" 
+      <IconButton
+        edge="start"
+        color="inherit"
+        aria-label="menu"
         sx={{ mr: 2 }}
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
@@ -42,7 +42,7 @@ export default function MainMenu() {
         <MenuItem onClick={handleClose} component={Link} to="/" divider>
           Página inicial
         </MenuItem>
-        
+
         <MenuItem onClick={handleClose} component={Link} to="/cars">
           Listagem de veículos
         </MenuItem>
@@ -63,10 +63,9 @@ export default function MainMenu() {
         <MenuItem onClick={handleClose} component={Link} to="/about">
           Sobre o autor
         </MenuItem>
-        
+
       </Menu>
     </div>
   );
 }
-
 

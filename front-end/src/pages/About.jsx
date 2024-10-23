@@ -58,7 +58,7 @@ export default function About() {
           <Typography gutterBottom variant="h5" component="div">
             Fausto Gonçalves Cintra
           </Typography>
-          
+
           {/* 8. No corpo do cartão, escreva um pequeno texto sobre você */}
           <Typography variant="body2" color="text.secondary">
             Professor universitário há 11 anos, casado, pai de duas filhas. Nas horas vagas, gosta de assistir a séries e filmes e jogar xadrez.
@@ -71,9 +71,9 @@ export default function About() {
                que aparece entre parênteses é o valor da variável de estado, que deve
                aumentar a cada clique dado. */}
         <CardActions>
-          <Button 
-            variant="contained" 
-            color="secondary" 
+          <Button
+            variant="contained"
+            color="secondary"
             startIcon={<FavoriteIcon />}
             onClick={() => setLikes(Number(likes) + 1)}
           >
