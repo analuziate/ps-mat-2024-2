@@ -2,11 +2,10 @@ import prisma from '../database/client.js'
 import Customer from '../models/customer.js'
 import { ZodError } from 'zod'
 
-const controller = {}     // Objeto vazio
+const controller = {} // Objeto vazio
 
 controller.create = async function (req, res) {
   try {
-
     // Chama a validação do Zod para o cliente
     Customer.parse(req.body)
 
@@ -14,38 +13,29 @@ controller.create = async function (req, res) {
 
     // HTTP 201: Created
     res.status(201).end()
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
 
-    // Se for erro de validação do Zod retorna
-    // HTTP 422: Unprocessable Entity
+    // Se for erro de validação do Zod retorna HTTP 422: Unprocessable Entity
     if (error instanceof ZodError) res.status(422).send(error.issues)
-
-    // HTTP 500: Internal Server Error
-    else res.status(500).end()
+    else res.status(500).end() // HTTP 500: Internal Server Error
   }
 }
 
 controller.retrieveAll = async function (req, res) {
   try {
     const result = await prisma.customer.findMany({
-      orderBy: [
-        { name: 'asc' }
-      ],
+      orderBy: [{ name: 'asc' }],
       include: {
-        cars: req.query.include === 'cars'
-      }
+        cars: req.query.include === 'cars',
+      },
     })
 
     // HTTP 200: OK (implícito)
     res.send(result)
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
-
-    // HTTP 500: Internal Server Error
-    res.status(500).end()
+    res.status(500).end() // HTTP 500: Internal Server Error
   }
 }
 
@@ -54,63 +44,52 @@ controller.retrieveOne = async function (req, res) {
     const result = await prisma.customer.findUnique({
       where: { id: Number(req.params.id) },
       include: {
-        cars: req.query.include === 'cars'
-      }
+        cars: req.query.include === 'cars',
+      },
     })
 
-    // Encontrou ~> retorna HTTP 200: OK (implícito)
-    if (result) res.send(result)
-    // Não encontrou ~> retorna HTTP 404: Not Found
-    else res.status(404).end()
-  }
-  catch (error) {
+    if (result) res.send(result) // Encontrou -> retorna HTTP 200: OK (implícito)
+    else res.status(404).end() // Não encontrou -> retorna HTTP 404: Not Found
+  } catch (error) {
     console.error(error)
-
-    // HTTP 500: Internal Server Error
-    res.status(500).end()
+    res.status(500).end() // HTTP 500: Internal Server Error
   }
 }
 
 controller.update = async function (req, res) {
   try {
+    // Validação do modelo Customer com Zod
+    Customer.parse(req.body)
+
     const result = await prisma.customer.update({
       where: { id: Number(req.params.id) },
-      data: req.body
+      data: req.body,
     })
 
-    // Encontrou e atualizou ~> HTTP 204: No Content
-    if (result) res.status(204).end()
-    // Não encontrou (e não atualizou) ~> HTTP 404: Not Found
-    else res.status(404).end()
-  }
-  catch (error) {
+    if (result) res.status(204).end() // Encontrou e atualizou -> HTTP 204: No Content
+    else res.status(404).end() // Não encontrou -> HTTP 404: Not Found
+  } catch (error) {
     console.error(error)
 
-    // HTTP 500: Internal Server Error
-    res.status(500).end()
+    // Se for erro de validação do Zod, retorna HTTP 422: Unprocessable Entity
+    if (error instanceof ZodError) res.status(422).send(error.issues)
+    else res.status(500).end() // HTTP 500: Internal Server Error
   }
 }
 
 controller.delete = async function (req, res) {
   try {
     await prisma.customer.delete({
-      where: { id: Number(req.params.id) }
+      where: { id: Number(req.params.id) },
     })
 
-    // Encontrou e excluiu ~> HTTP 204: No Content
-    res.status(204).end()
-  }
-  catch (error) {
+    res.status(204).end() // Encontrou e excluiu -> HTTP 204: No Content
+  } catch (error) {
     if (error?.code === 'P2025') {
-      // Não encontrou e não excluiu ~> HTTP 404: Not Found
-      res.status(404).end()
-    }
-    else {
-      // Outros tipos de erro
+      res.status(404).end() // Não encontrou e não excluiu -> HTTP 404: Not Found
+    } else {
       console.error(error)
-
-      // HTTP 500: Internal Server Error
-      res.status(500).end()
+      res.status(500).end() // HTTP 500: Internal Server Error
     }
   }
 }

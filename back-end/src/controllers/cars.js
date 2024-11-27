@@ -1,79 +1,93 @@
-import { Prisma } from '@prisma/client'
 import prisma from '../database/client.js'
+import Car from '../models/car.js'
+import { ZodError } from 'zod'
 
-const controller = {} //Objeto vazio
+const controller = {} // Objeto vazio
 
 controller.create = async function (req, res) {
   try {
-    //Preenche qual usuário criou o carro com o id do usuário autenticado
+    // Validação do modelo Car com Zod
+    Car.parse(req.body)
+
+    // Preenche qual usuário criou o carro com o id do usuário autenticado
     req.body.created_user_id = req.authUser.id
 
-    //Preenche qual usuário modificou por último o carro com o id do usuário autenticado
+    // Preenche qual usuário modificou por último o carro com o id
+    // do usuário autenticado
     req.body.updated_user_id = req.authUser.id
 
     await prisma.car.create({ data: req.body })
 
-    //HTTP 201: Created
+    // HTTP 201: Created
     res.status(201).end()
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
 
-    //HTTP 500: Internal server error
-    res.status(500).end()
+    // Se for erro de validação do Zod, retorna HTTP 422
+    if (error instanceof ZodError) res.status(422).send(error.issues)
+    else res.status(500).end() // HTTP 500: Internal Server Error
   }
 }
 
-controller.retriveAll = async function (req, res) {
+controller.retrieveAll = async function (req, res) {
   try {
     const includedRels = req.query.include?.split(',') ?? []
 
     const result = await prisma.car.findMany({
-      orderBy: [{ model: 'asc' }, { brand: 'asc' }, { id: 'asc' }],
+      orderBy: [
+        { brand: 'asc' },
+        { model: 'asc' },
+        { id: 'asc' }
+      ],
       include: {
-        customer: req.query.includedRels === ('customer'),
-        created_user: req.query.includedRels === ('created_user'),
-        updated_user: req.query.includedRels === ('updated_user')
+        customer: includedRels.includes('customer'),
+        created_user: includedRels.includes('created_user'),
+        updated_user: includedRels.includes('updated_user')
       }
     })
-    res.send(result).end()
+
+    // HTTP 200: OK (implícito)
+    res.send(result)
   } catch (error) {
     console.error(error)
+
+    // HTTP 500: Internal Server Error
     res.status(500).end()
   }
 }
 
-
-controller.retriveOne = async function (req, res) {
+controller.retrieveOne = async function (req, res) {
   try {
     const includedRels = req.query.include?.split(',') ?? []
 
     const result = await prisma.car.findUnique({
-      where: {
-        id: Number(req.params.id)
-      },
+      where: { id: Number(req.params.id) },
       include: {
-        customer: req.query.includedRels === 'car',
-        created_user: req.query.includedRels === 'created_user',
-        updated_user: req.query.includedRels === 'updated_user'
+        customer: includedRels.includes('customer'),
+        created_user: includedRels.includes('created_user'),
+        updated_user: includedRels.includes('updated_user')
       }
     })
 
-    //Encontrou -> retorna HTTP 200: OK (implícito)
-    if (result) res.send(result).end()
-    //Não Encontrou -> retorna HTTP 404: Not Found
+    // Encontrou ~> retorna HTTP 200: OK (implícito)
+    if (result) res.send(result)
+    // Não encontrou ~> retorna HTTP 404: Not Found
     else res.status(404).end()
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
 
-    //HTTP 500: Internal Server Error
+    // HTTP 500: Internal Server Error
     res.status(500).end()
   }
 }
 
 controller.update = async function (req, res) {
   try {
+    // Validação do modelo Car com Zod
+    Car.parse(req.body)
+
+    // Preenche qual usuário modificou por último o carro com o id
+    // do usuário autenticado
     req.body.updated_user_id = req.authUser.id
 
     const result = await prisma.car.update({
@@ -81,37 +95,36 @@ controller.update = async function (req, res) {
       data: req.body
     })
 
-    //Encontrou e atualizou -> HTTP 204: No Content
+    // Encontrou e atualizou ~> HTTP 204: No Content
     if (result) res.status(204).end()
-    //Não encontrou(e não atualizou) -> HTTP 404: Not Found
+    // Não encontrou (e não atualizou) ~> HTTP 404: Not Found
     else res.status(404).end()
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
 
-    //HTTP 500: Internal Server Error
-    res.status(500).end()
+    // Se for erro de validação do Zod, retorna HTTP 422
+    if (error instanceof ZodError) res.status(422).send(error.issues)
+    else res.status(500).end() // HTTP 500: Internal Server Error
   }
 }
 
 controller.delete = async function (req, res) {
   try {
-    const result = await prisma.car.delete({
+    await prisma.car.delete({
       where: { id: Number(req.params.id) }
     })
 
-    //Encontrou e excluiu -> HTTP 204: No Content
+    // Encontrou e excluiu ~> HTTP 204: No Content
     res.status(204).end()
-  }
-  catch (error) {
+  } catch (error) {
     if (error?.code === 'P2025') {
-      //Não encontrou e não excluiu -> HTTP 404: Not Found
+      // Não encontrou e não excluiu ~> HTTP 404: Not Found
       res.status(404).end()
-    }
-    else {
+    } else {
+      // Outros tipos de erro
       console.error(error)
 
-      // HTTP 500 -> Internal Server Error
+      // HTTP 500: Internal Server Error
       res.status(500).end()
     }
   }
